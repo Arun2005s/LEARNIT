@@ -1,0 +1,304 @@
+.note-detail-page {
+  padding: 40px 0;
+  min-height: calc(100vh - 70px);
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: #0056b3;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.note-content {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+  margin-bottom: 30px;
+}
+
+.note-title h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.meta-item svg {
+  color: #007bff;
+}
+
+.note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.note-body {
+  line-height: 1.8;
+}
+
+.note-body .content {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.note-body .content h1,
+.note-body .content h2,
+.note-body .content h3,
+.note-body .content h4,
+.note-body .content h5,
+.note-body .content h6 {
+  color: #333;
+  margin: 20px 0 15px 0;
+}
+
+.note-body .content p {
+  margin-bottom: 15px;
+}
+
+.note-body .content ul,
+.note-body .content ol {
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
+
+.note-body .content li {
+  margin-bottom: 8px;
+}
+
+.note-body .content blockquote {
+  border-left: 4px solid #007bff;
+  padding-left: 20px;
+  margin: 20px 0;
+  font-style: italic;
+  color: #666;
+}
+
+.note-body .content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Comments Section */
+.comments-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+}
+
+.comments-section h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e1e5e9;
+}
+
+.comment-form {
+  margin-bottom: 30px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.comment-form .btn {
+  float: right;
+}
+
+.comments-list {
+  clear: both;
+}
+
+.comment-item {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #e1e5e9;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #333;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.comment-content {
+  color: #555;
+  line-height: 1.6;
+}
+
+.no-comments {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.note-not-found {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.note-not-found h2 {
+  font-size: 2rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .note-detail-page {
+    padding: 20px 0;
+  }
+
+  .note-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .note-content {
+    padding: 25px 20px;
+    margin: 0 15px 20px 15px;
+  }
+
+  .note-title h1 {
+    font-size: 2rem;
+  }
+
+  .note-meta {
+    gap: 15px;
+  }
+
+  .comments-section {
+    padding: 20px;
+    margin: 0 15px;
+  }
+
+  .comment-form .btn {
+    float: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .note-content {
+    padding: 20px 15px;
+    margin: 0 10px 20px 10px;
+  }
+
+  .note-title h1 {
+    font-size: 1.8rem;
+  }
+
+  .note-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .comments-section {
+    padding: 15px;
+    margin: 0 10px;
+  }
+
+  .comment-item {
+    padding: 15px;
+  }
+
+  .comment-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

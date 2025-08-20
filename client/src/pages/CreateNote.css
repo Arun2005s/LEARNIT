@@ -1,0 +1,226 @@
+.create-note-page {
+  padding: 40px 0;
+  min-height: calc(100vh - 70px);
+}
+
+/* Header */
+.create-note-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.create-note-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.create-note-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Form */
+.create-note-form {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+}
+
+/* Quill Editor */
+.quill-editor {
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.quill-editor.error {
+  border-color: #dc3545;
+}
+
+.quill-editor .ql-toolbar {
+  border-bottom: 1px solid #e1e5e9;
+  background-color: #f8f9fa;
+}
+
+.quill-editor .ql-container {
+  border: none;
+  min-height: 200px;
+}
+
+.quill-editor .ql-editor {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.quill-editor .ql-editor.ql-blank::before {
+  color: #999;
+  font-style: italic;
+}
+
+/* Tags Input */
+.tags-input-container {
+  position: relative;
+}
+
+.tags-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 14px;
+}
+
+.tags-input-container .form-input {
+  padding-left: 45px;
+}
+
+/* Access Control */
+.access-control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.access-control-header h3 {
+  color: #333;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.access-control-panel {
+  background-color: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.add-user-section {
+  margin-bottom: 20px;
+}
+
+.add-user-section select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.access-list {
+  margin-top: 20px;
+}
+
+.access-list h4 {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.access-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background-color: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.user-name {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+  min-width: 120px;
+}
+
+.access-type-select {
+  padding: 6px 10px;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  font-size: 13px;
+  background-color: white;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #e1e5e9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .create-note-page {
+    padding: 20px 0;
+  }
+
+  .create-note-header h1 {
+    font-size: 2rem;
+  }
+
+  .create-note-form {
+    padding: 30px 20px;
+    margin: 0 15px;
+  }
+
+  .access-control-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .access-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .user-name {
+    min-width: auto;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-note-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .create-note-form {
+    padding: 20px 15px;
+    margin: 0 10px;
+  }
+
+  .quill-editor .ql-editor {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .access-control-panel {
+    padding: 15px;
+  }
+}
