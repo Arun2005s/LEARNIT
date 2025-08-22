@@ -11,6 +11,8 @@ import CreateNote from './pages/CreateNote';
 import EditNote from './pages/EditNote';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminAssignments from './pages/AdminAssignments';
+import Assignments from './pages/Assignments';
 import './App.css';
 
 function App() {
@@ -37,7 +39,7 @@ function App() {
           />
           <Route 
             path="/register" 
-            element={user ? <Navigate to="/" /> : <Register />} 
+            element={user ? <Navigate to="/register" /> : <Register />} 
           />
           <Route 
             path="/notes" 
@@ -62,6 +64,14 @@ function App() {
           <Route 
             path="/admin" 
             element={user?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/admin/assignments" 
+            element={user?.role === 'admin' ? <AdminAssignments /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/assignments" 
+            element={user ? <Assignments /> : <Navigate to="/login" />} 
           />
         </Routes>
       </main>

@@ -76,7 +76,6 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* Hero Section */}
         <section className="hero">
           <div className="hero-content" style={{ marginLeft: '4rem' }}>
             <h1 className="hero-title">
@@ -101,7 +100,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Statistics Section */}
       <section className="stats-section">
         <div className="container">
           <h2 className="section-title">System Overview</h2>
@@ -138,7 +136,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="features-section">
         <div className="container">
           <h2 className="section-title">Key Features</h2>
@@ -154,7 +151,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Recent Notes Section */}
       {stats.recentNotes.length > 0 && (
         <section className="recent-notes-section">
           <div className="container">
@@ -193,7 +189,6 @@ const Home = () => {
         </section>
       )}
 
-      {/* Call to Action */}
       <section className="cta-section">
         <div className="container">
           <div className="cta-content">

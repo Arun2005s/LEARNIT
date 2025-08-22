@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaUsers, FaBook, FaChartLine, FaCog } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaUsers, FaBook, FaChartLine, FaCog, FaTasks } from 'react-icons/fa';
 import axios from 'axios';
 import './AdminDashboard.css';
 
@@ -93,6 +94,20 @@ const AdminDashboard = () => {
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="section-card">
+            <h3>Quick Actions</h3>
+            <div className="quick-actions">
+              <Link to="/admin/assignments" className="action-btn">
+                <FaTasks />
+                Manage Assignments
+              </Link>
+              <Link to="/create-note" className="action-btn">
+                <FaBook />
+                Create Note
+              </Link>
             </div>
           </div>
         </div>

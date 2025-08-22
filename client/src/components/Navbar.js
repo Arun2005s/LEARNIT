@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaGraduationCap, FaBars, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaGraduationCap, FaBars, FaTimes, FaUser, FaSignOutAlt, FaBook } from 'react-icons/fa';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -37,6 +37,10 @@ const Navbar = () => {
               <Link to="/notes" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                 Notes
               </Link>
+              <Link to="/assignments" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                <FaBook />
+                Assignments
+              </Link>
               
               {user.role === 'admin' && (
                 <>
@@ -45,6 +49,10 @@ const Navbar = () => {
                   </Link>
                   <Link to="/admin" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     Admin
+                  </Link>
+                  <Link to="/admin/assignments" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                    <FaBook />
+                    Manage Assignments
                   </Link>
                 </>
               )}

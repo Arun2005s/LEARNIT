@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const noteRoutes = require('./routes/notes');
 const userRoutes = require('./routes/users');
 const courseRoutes = require('./routes/courses');
+const assignmentRoutes = require('./routes/assignments');
 
 dotenv.config();
 
@@ -30,6 +31,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/assignments', assignmentRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 
 // Basic route
 app.get('/', (req, res) => {
