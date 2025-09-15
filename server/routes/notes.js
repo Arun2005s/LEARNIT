@@ -5,18 +5,27 @@ const { auth, adminAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all notes (with filtering)
+router.get('/stats/public', async (req, res) => {
+  try {
+    const totalNotes = await Note.countDocuments({ isPublic: true });
+    
+    res.json({
+      totalNotes
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 router.get('/', auth, async (req, res) => {
   try {
     const { course, search, tags } = req.query;
     let query = {};
 
-    // Filter by course
     if (course) {
       query.course = course;
     }
 
-    // Search in title and content
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -24,12 +33,10 @@ router.get('/', auth, async (req, res) => {
       ];
     }
 
-    // Filter by tags
     if (tags) {
       query.tags = { $in: tags.split(',') };
     }
 
-    // Check access permissions
     if (req.user.role !== 'admin') {
       query.$or = [
         { isPublic: true },
@@ -51,7 +58,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Get single note by ID
 router.get('/:id', auth, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id)
@@ -64,7 +70,6 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    // Check access permissions
     if (req.user.role !== 'admin' && 
         !note.isPublic && 
         !note.accessList.some(access => access.user._id.equals(req.user._id)) &&
@@ -72,7 +77,6 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    // Increment view count
     note.viewCount += 1;
     await note.save();
 
@@ -82,12 +86,10 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Create new note (admin only)
 router.post('/', adminAuth, async (req, res) => {
   try {
     const { title, content, course, tags, isPublic, accessList } = req.body;
 
-    // Verify course exists if provided
     if (course) {
       const courseExists = await Course.findById(course);
       if (!courseExists) {
@@ -117,7 +119,6 @@ router.post('/', adminAuth, async (req, res) => {
   }
 });
 
-// Update note (admin, author, or users with edit access)
 router.put('/:id', auth, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
@@ -126,18 +127,14 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    // Check permissions
     let hasAccess = false;
     
-    // Admin always has access
     if (req.user.role === 'admin') {
       hasAccess = true;
     }
-    // Author has access
     else if (note.author.equals(req.user._id)) {
       hasAccess = true;
     }
-    // Check access list for edit permission
     else if (note.accessList && note.accessList.length > 0) {
       const userAccess = note.accessList.find(access => 
         access.user.toString() === req.user._id.toString() && 
@@ -163,7 +160,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Delete note (admin or author only)
 router.delete('/:id', auth, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
@@ -172,7 +168,6 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    // Check permissions
     if (req.user.role !== 'admin' && !note.author.equals(req.user._id)) {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -184,7 +179,6 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// Add comment to note
 router.post('/:id/comments', auth, async (req, res) => {
   try {
     const { content } = req.body;
@@ -194,7 +188,6 @@ router.post('/:id/comments', auth, async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    // Check access permissions
     if (req.user.role !== 'admin' && 
         !note.isPublic && 
         !note.accessList.some(access => access.user.equals(req.user._id)) &&
@@ -218,7 +211,6 @@ router.post('/:id/comments', auth, async (req, res) => {
   }
 });
 
-// Update comment
 router.put('/:id/comments/:commentId', auth, async (req, res) => {
   try {
     const { content } = req.body;
@@ -233,7 +225,6 @@ router.put('/:id/comments/:commentId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
-    // Check permissions
     if (req.user.role !== 'admin' && !comment.user.equals(req.user._id)) {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -252,7 +243,6 @@ router.put('/:id/comments/:commentId', auth, async (req, res) => {
   }
 });
 
-// Delete comment
 router.delete('/:id/comments/:commentId', auth, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
@@ -266,7 +256,6 @@ router.delete('/:id/comments/:commentId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
-    // Check permissions
     if (req.user.role !== 'admin' && !comment.user.equals(req.user._id)) {
       return res.status(403).json({ message: 'Access denied' });
     }

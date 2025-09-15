@@ -28,7 +28,6 @@ const Notes = () => {
       setNotes(notesData);
       setFilteredNotes(notesData);
       
-      // Extract unique tags
       const tags = [...new Set(notesData.flatMap(note => note.tags || []))];
       setAvailableTags(tags);
     } catch (error) {
@@ -45,7 +44,6 @@ const Notes = () => {
   const filterNotes = () => {
     let filtered = notes;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(note =>
         note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,7 +51,6 @@ const Notes = () => {
       );
     }
 
-    // Filter by tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter(note =>
         selectedTags.some(tag => note.tags?.includes(tag))
@@ -96,7 +93,6 @@ const Notes = () => {
   return (
     <div className="notes-page">
       <div className="container">
-        {/* Header */}
         <div className="notes-header">
           <div className="header-content">
             <h1>Learning Notes</h1>
@@ -109,7 +105,6 @@ const Notes = () => {
           )}
         </div>
 
-        {/* Search and Filters */}
         <div className="notes-controls">
           <div className="search-container">
             <FaSearch className="search-icon" />
@@ -131,7 +126,6 @@ const Notes = () => {
           </button>
         </div>
 
-        {/* Filters Panel */}
         {showFilters && (
           <div className="filters-panel">
             <div className="filter-section">
@@ -156,7 +150,6 @@ const Notes = () => {
           </div>
         )}
 
-        {/* Results Count */}
         <div className="results-info">
           <p>
             Showing {filteredNotes.length} of {notes.length} notes
@@ -165,7 +158,6 @@ const Notes = () => {
           </p>
         </div>
 
-        {/* Notes Grid */}
         {filteredNotes.length === 0 ? (
           <div className="no-notes">
             <div className="no-notes-content">

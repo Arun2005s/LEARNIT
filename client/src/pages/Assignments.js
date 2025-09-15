@@ -65,7 +65,6 @@ const Assignments = () => {
         }
       });
 
-      // Reset form and refresh assignments
       setSubmissionData({ file: null, url: '', comments: '' });
       setShowSubmissionForm(false);
       setSelectedAssignment(null);
@@ -129,7 +128,6 @@ const Assignments = () => {
           <p>Complete your assigned tasks and submit your work</p>
         </div>
 
-        {/* Assignments List */}
         <div className="assignments-grid">
           {assignments.map((assignment) => {
             const submitted = hasSubmitted(assignment);
@@ -219,7 +217,6 @@ const Assignments = () => {
           })}
         </div>
 
-        {/* Submission Form Modal */}
         {showSubmissionForm && selectedAssignment && (
           <div className="modal-overlay" onClick={() => setShowSubmissionForm(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>

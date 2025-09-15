@@ -1,22 +1,20 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Register new user
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password, fullName, role } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email or username' });
     }
 
-    // Create new user
     const user = new User({
       username,
       email,
@@ -27,7 +25,6 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || 'your-secret-key',
@@ -50,24 +47,20 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login user
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || 'your-secret-key',
@@ -90,7 +83,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get user profile
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
@@ -100,7 +92,6 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
-// Update user profile
 router.put('/profile', auth, async (req, res) => {
   try {
     const { fullName, profilePicture } = req.body;
@@ -115,6 +106,55 @@ router.put('/profile', auth, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+});
+
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(503).json({ 
+      message: 'Google OAuth is not configured. Please contact the administrator.' 
+    });
+  }
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })(req, res, next);
+});
+
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  async (req, res) => {
+    try {
+      const token = jwt.sign(
+        { userId: req.user._id },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+        fullName: req.user.fullName,
+        role: req.user.role
+      }))}`);
+    } catch (error) {
+      console.error('Google OAuth callback error:', error);
+      res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=oauth_failed`);
+    }
+  }
+);
+
+router.get('/google/success', auth, (req, res) => {
+  res.json({
+    message: 'Google authentication successful',
+    user: {
+      id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+      fullName: req.user.fullName,
+      role: req.user.role
+    }
+  });
 });
 
 module.exports = router;

@@ -18,20 +18,36 @@ const Home = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [notesResponse, usersResponse] = await Promise.all([
-          axios.get('/api/notes'),
-          user?.role === 'admin' ? axios.get('/api/users/stats/overview') : null
-        ]);
+        if (user) {
+          const [notesResponse, usersResponse] = await Promise.all([
+            axios.get('/api/notes'),
+            user?.role === 'admin' 
+              ? axios.get('/api/users/stats/overview')
+              : axios.get('/api/users/stats/basic')
+          ]);
 
-        const notes = notesResponse.data;
-        const recentNotes = notes.slice(0, 6);
+          const notes = notesResponse.data;
+          const recentNotes = notes.slice(0, 6);
 
-        setStats({
-          totalUsers: usersResponse?.data?.totalUsers || 0,
-          totalNotes: notes.length,
-          totalCourses: 0, 
-          recentNotes
-        });
+          setStats({
+            totalUsers: usersResponse?.data?.totalUsers || 0,
+            totalNotes: notes.length,
+            totalCourses: 0, 
+            recentNotes
+          });
+        } else {
+          const [notesResponse, usersResponse] = await Promise.all([
+            axios.get('/api/notes/stats/public'),
+            axios.get('/api/users/stats/public')
+          ]);
+
+          setStats({
+            totalUsers: usersResponse?.data?.totalUsers || 0,
+            totalNotes: notesResponse?.data?.totalNotes || 0,
+            totalCourses: 0, 
+            recentNotes: []
+          });
+        }
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {
@@ -79,7 +95,7 @@ const Home = () => {
         <section className="hero">
           <div className="hero-content" style={{ marginLeft: '4rem' }}>
             <h1 className="hero-title">
-          Welcome to the Online Learning Management System
+          Welcome to LEARNIT
             </h1>
             <p className="hero-subtitle">
           A modern platform for creating, sharing, and collaborating on educational content

@@ -4,7 +4,6 @@ const { auth, adminAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all courses
 router.get('/', auth, async (req, res) => {
   try {
     const courses = await Course.find({ isActive: true })
@@ -16,7 +15,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Get course by ID
 router.get('/:id', auth, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)
@@ -33,12 +31,10 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Create new course (admin only)
 router.post('/', adminAuth, async (req, res) => {
   try {
     const { title, description, code, instructor, category, level, maxStudents, startDate, endDate } = req.body;
 
-    // Check if course code already exists
     const existingCourse = await Course.findOne({ code });
     if (existingCourse) {
       return res.status(400).json({ message: 'Course with this code already exists' });
@@ -53,7 +49,7 @@ router.post('/', adminAuth, async (req, res) => {
       level: level || 'Beginner',
       maxStudents: maxStudents || 100,
       startDate: startDate || new Date(),
-      endDate: endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+      endDate: endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       isActive: true
     });
 
@@ -68,7 +64,6 @@ router.post('/', adminAuth, async (req, res) => {
   }
 });
 
-// Update course (admin or instructor only)
 router.put('/:id', auth, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -77,7 +72,6 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Course not found' });
     }
 
-    // Check permissions
     if (req.user.role !== 'admin' && !course.instructor.equals(req.user._id)) {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -94,7 +88,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Delete course (admin only)
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -110,7 +103,6 @@ router.delete('/:id', adminAuth, async (req, res) => {
   }
 });
 
-// Enroll student in course
 router.post('/:id/enroll', auth, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);

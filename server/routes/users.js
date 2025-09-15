@@ -4,7 +4,6 @@ const { auth, adminAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all users (admin only)
 router.get('/', adminAuth, async (req, res) => {
   try {
     const users = await User.find({}).select('-password').sort({ createdAt: -1 });
@@ -14,10 +13,8 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
-// Get user by ID
 router.get('/:id', auth, async (req, res) => {
   try {
-    // Users can only view their own profile unless they're admin
     if (req.user.role !== 'admin' && req.user._id.toString() !== req.params.id) {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -33,10 +30,8 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Update user (admin or self)
 router.put('/:id', auth, async (req, res) => {
   try {
-    // Users can only update their own profile unless they're admin
     if (req.user.role !== 'admin' && req.user._id.toString() !== req.params.id) {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -44,12 +39,10 @@ router.put('/:id', auth, async (req, res) => {
     const { fullName, email, username, role } = req.body;
     const updateData = {};
 
-    // Only allow certain fields to be updated
     if (fullName) updateData.fullName = fullName;
     if (email) updateData.email = email;
     if (username) updateData.username = username;
     
-    // Only admins can change roles
     if (role && req.user.role === 'admin') {
       updateData.role = role;
     }
@@ -70,7 +63,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Delete user (admin only)
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -79,7 +71,6 @@ router.delete('/:id', adminAuth, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Prevent admin from deleting themselves
     if (user._id.equals(req.user._id)) {
       return res.status(400).json({ message: 'Cannot delete your own account' });
     }
@@ -91,7 +82,6 @@ router.delete('/:id', adminAuth, async (req, res) => {
   }
 });
 
-// Get user statistics (admin only)
 router.get('/stats/overview', adminAuth, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
@@ -108,6 +98,32 @@ router.get('/stats/overview', adminAuth, async (req, res) => {
       totalStudents,
       totalAdmins,
       recentUsers
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+router.get('/stats/basic', auth, async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalStudents = await User.countDocuments({ role: 'student' });
+    
+    res.json({
+      totalUsers,
+      totalStudents
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+router.get('/stats/public', async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    
+    res.json({
+      totalUsers
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

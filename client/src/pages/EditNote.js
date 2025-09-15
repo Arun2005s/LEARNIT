@@ -36,7 +36,6 @@ const EditNote = () => {
       const noteData = response.data;
       setNote(noteData);
       
-      // Check if user has edit access
       if (!hasEditAccess(noteData)) {
         navigate('/notes');
         return;
@@ -66,17 +65,13 @@ const EditNote = () => {
     }
   };
 
-  // Check if user has edit access to this note
   const hasEditAccess = (noteData) => {
     if (!user || !noteData) return false;
     
-    // Admin always has edit access
     if (user.role === 'admin') return true;
     
-    // Check if user is the author
     if (noteData.author?._id === user._id) return true;
     
-    // Check access list for edit permission
     if (noteData.accessList && noteData.accessList.length > 0) {
       const userAccess = noteData.accessList.find(access => access.user === user._id);
       return userAccess && userAccess.accessType === 'edit';
@@ -92,7 +87,6 @@ const EditNote = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -219,7 +213,6 @@ const EditNote = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="create-note-form">
-          {/* Title */}
           <div className="form-group">
             <label htmlFor="title">Title *</label>
             <input
@@ -235,7 +228,6 @@ const EditNote = () => {
             {errors.title && <span className="error-message">{errors.title}</span>}
           </div>
 
-          {/* Content */}
           <div className="form-group">
             <label htmlFor="content">Content *</label>
             <ReactQuill
@@ -257,7 +249,6 @@ const EditNote = () => {
             {errors.content && <span className="error-message">{errors.content}</span>}
           </div>
 
-          {/* Tags */}
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
             <div className="tags-input-container">
@@ -275,7 +266,6 @@ const EditNote = () => {
             <small>Separate multiple tags with commas (e.g., math, algebra, equations)</small>
           </div>
 
-          {/* Public/Private Toggle */}
           <div className="form-group">
             <label className="checkbox-label">
               <input
@@ -291,7 +281,6 @@ const EditNote = () => {
             </label>
           </div>
 
-          {/* Access Control */}
           {!formData.isPublic && (
             <div className="form-group">
               <div className="access-control-header">
@@ -369,14 +358,12 @@ const EditNote = () => {
             </div>
           )}
 
-          {/* Submit Error */}
           {errors.submit && (
             <div className="error-message submit-error">
               {errors.submit}
             </div>
           )}
 
-          {/* Form Actions */}
           <div className="form-actions">
             <button
               type="button"

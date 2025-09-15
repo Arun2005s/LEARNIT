@@ -24,7 +24,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
           <FaGraduationCap className="brand-icon" />
-          <span>Learning System</span>
+          <span>LEARNIT</span>
         </Link>
 
         <div className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>

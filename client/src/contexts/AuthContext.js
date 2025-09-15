@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Set up axios defaults
   if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
@@ -40,8 +39,22 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, [token]);
 
-  const login = async (email, password) => {
+  const login = async (email, password, isOAuth = false) => {
     try {
+      if (isOAuth) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          setToken(token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          
+          const response = await axios.get('/api/auth/profile');
+          setUser(response.data);
+          
+          return { success: true };
+        }
+        return { success: false, message: 'OAuth authentication failed' };
+      }
+      
       const response = await axios.post('/api/auth/login', { email, password });
       const { token: newToken, user: userData } = response.data;
       
@@ -98,13 +111,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = () => {
+    window.location.href = 'http://localhost:5000/api/auth/google';
+  };
+
   const value = {
     user,
     loading,
     login,
     register,
     logout,
-    updateProfile
+    updateProfile,
+    loginWithGoogle
   };
 
   return (

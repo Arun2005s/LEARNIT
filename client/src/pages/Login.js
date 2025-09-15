@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaSignInAlt, FaEye, FaEyeSlash, FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaSignInAlt, FaEye, FaEyeSlash, FaEnvelope, FaLock, FaGoogle } from 'react-icons/fa';
 import './Auth.css';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -14,6 +15,13 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  React.useEffect(() => {
+    const oauthError = searchParams.get('error');
+    if (oauthError === 'oauth_failed') {
+      setErrors({ submit: 'Google sign-in failed. Please try again.' });
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,7 +82,6 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* Email */}
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <div className="input-container">
@@ -93,7 +100,6 @@ const Login = () => {
               {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
 
-            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-container">
@@ -119,14 +125,12 @@ const Login = () => {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            {/* Submit Error */}
             {errors.submit && (
               <div className="error-message submit-error">
                 {errors.submit}
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="btn btn-primary btn-large auth-submit"
@@ -136,6 +140,20 @@ const Login = () => {
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
+
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-google btn-large"
+            onClick={loginWithGoogle}
+            disabled={loading}
+          >
+            <FaGoogle />
+            Continue with Google
+          </button>
 
           <div className="auth-footer">
             <p>

@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 import Notes from './pages/Notes';
 import NoteDetail from './pages/NoteDetail';
 import CreateNote from './pages/CreateNote';
@@ -39,7 +40,11 @@ function App() {
           />
           <Route 
             path="/register" 
-            element={user ? <Navigate to="/register" /> : <Register />} 
+            element={user ? <Navigate to="/" /> : <Register />} 
+          />
+          <Route 
+            path="/auth/callback" 
+            element={<AuthCallback />} 
           />
           <Route 
             path="/notes" 

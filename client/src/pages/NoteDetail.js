@@ -38,7 +38,7 @@ const NoteDetail = () => {
       setSubmitting(true);
       await axios.post(`/api/notes/${id}/comments`, { content: comment });
       setComment('');
-      fetchNote(); // Refresh to get the new comment
+      fetchNote();
     } catch (error) {
       console.error('Error adding comment:', error);
     } finally {
@@ -73,17 +73,13 @@ const NoteDetail = () => {
     }
   };
 
-  // Check if user has edit access to this note
   const hasEditAccess = () => {
     if (!user || !note) return false;
     
-    // Admin always has edit access
     if (user.role === 'admin') return true;
     
-    // Check if user is the author
     if (note.author?._id === user._id) return true;
     
-    // Check access list for edit permission
     if (note.accessList && note.accessList.length > 0) {
       const userAccess = note.accessList.find(access => access.user === user._id);
       return userAccess && userAccess.accessType === 'edit';

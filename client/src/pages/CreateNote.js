@@ -24,7 +24,6 @@ const CreateNote = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -76,7 +75,6 @@ const CreateNote = () => {
       const noteData = {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-        // course field removed - notes can be created without a course
       };
 
       await axios.post('/api/notes', noteData);
@@ -94,7 +92,6 @@ const CreateNote = () => {
     navigate('/notes');
   };
 
-  // Access control removed: notes are created without per-user access configuration
 
   return (
     <div className="create-note-page">
@@ -105,7 +102,6 @@ const CreateNote = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="create-note-form">
-          {/* Title */}
           <div className="form-group">
             <label htmlFor="title">Title *</label>
             <input
@@ -121,7 +117,6 @@ const CreateNote = () => {
             {errors.title && <span className="error-message">{errors.title}</span>}
           </div>
 
-          {/* Content */}
           <div className="form-group">
             <label htmlFor="content">Content *</label>
             <ReactQuill
@@ -143,7 +138,6 @@ const CreateNote = () => {
             {errors.content && <span className="error-message">{errors.content}</span>}
           </div>
 
-          {/* Tags */}
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
             <div className="tags-input-container">
@@ -161,16 +155,13 @@ const CreateNote = () => {
             <small>Separate multiple tags with commas (e.g., math, algebra, equations)</small>
           </div>
 
-          {/* Access control UI removed */}
 
-          {/* Submit Error */}
           {errors.submit && (
             <div className="error-message submit-error">
               {errors.submit}
             </div>
           )}
 
-          {/* Form Actions */}
           <div className="form-actions">
             <button
               type="button"

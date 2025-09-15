@@ -75,7 +75,6 @@ const courseSchema = new mongoose.Schema({
   }
 });
 
-// Update timestamp on save
 courseSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();

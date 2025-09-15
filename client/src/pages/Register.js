@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaUserPlus, FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser, FaIdCard } from 'react-icons/fa';
+import { FaUserPlus, FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser, FaIdCard, FaGoogle } from 'react-icons/fa';
 import './Auth.css';
 
 const Register = () => {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -18,6 +19,13 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  React.useEffect(() => {
+    const oauthError = searchParams.get('error');
+    if (oauthError === 'oauth_failed') {
+      setErrors({ submit: 'Google sign-up failed. Please try again.' });
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -105,7 +113,6 @@ const Register = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* Username */}
             <div className="form-group">
               <label htmlFor="username">Username</label>
               <div className="input-container">
@@ -124,7 +131,6 @@ const Register = () => {
               {errors.username && <span className="error-message">{errors.username}</span>}
             </div>
 
-            {/* Full Name */}
             <div className="form-group">
               <label htmlFor="fullName">Full Name</label>
               <div className="input-container">
@@ -143,7 +149,6 @@ const Register = () => {
               {errors.fullName && <span className="error-message">{errors.fullName}</span>}
             </div>
 
-            {/* Email */}
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <div className="input-container">
@@ -162,7 +167,6 @@ const Register = () => {
               {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
 
-            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-container">
@@ -188,7 +192,6 @@ const Register = () => {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            {/* Confirm Password */}
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <div className="input-container">
@@ -214,14 +217,12 @@ const Register = () => {
               {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
             </div>
 
-            {/* Submit Error */}
             {errors.submit && (
               <div className="error-message submit-error">
                 {errors.submit}
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="btn btn-primary btn-large auth-submit"
@@ -231,6 +232,20 @@ const Register = () => {
               {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
+
+          <div className="auth-divider">
+            <span>or</span>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-google btn-large"
+            onClick={loginWithGoogle}
+            disabled={loading}
+          >
+            <FaGoogle />
+            Sign up with Google
+          </button>
 
           <div className="auth-footer">
             <p>

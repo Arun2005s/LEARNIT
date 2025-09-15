@@ -6,7 +6,6 @@ const path = require('path');
 
 const router = express.Router();
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/assignments/');
@@ -20,20 +19,17 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB limit
+    fileSize: 50 * 1024 * 1024
   },
   fileFilter: function (req, file, cb) {
-    // Allow all file types for now, validation will be done in the route
     cb(null, true);
   }
 });
 
-// Get all assignments (admin sees all, students see active ones)
 router.get('/', auth, async (req, res) => {
   try {
     let query = {};
     
-    // Students only see active assignments
     if (req.user.role !== 'admin') {
       query.isActive = true;
     }
@@ -49,7 +45,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Get single assignment by ID
 router.get('/:id', auth, async (req, res) => {
   try {
     const assignment = await Assignment.findById(req.params.id)
@@ -60,7 +55,6 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Assignment not found' });
     }
 
-    // Students can only see active assignments
     if (req.user.role !== 'admin' && !assignment.isActive) {
       return res.status(403).json({ message: 'Assignment not available' });
     }
@@ -71,7 +65,6 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// Create new assignment (admin only)
 router.post('/', adminAuth, async (req, res) => {
   try {
     const { title, description, fileType, dueDate, maxFileSize, allowedExtensions } = req.body;
@@ -97,7 +90,6 @@ router.post('/', adminAuth, async (req, res) => {
   }
 });
 
-// Update assignment (admin only)
 router.put('/:id', adminAuth, async (req, res) => {
   try {
     const { title, description, fileType, dueDate, maxFileSize, allowedExtensions, isActive } = req.body;
@@ -126,7 +118,6 @@ router.put('/:id', adminAuth, async (req, res) => {
   }
 });
 
-// Delete assignment (admin only)
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const assignment = await Assignment.findById(req.params.id);
@@ -142,7 +133,6 @@ router.delete('/:id', adminAuth, async (req, res) => {
   }
 });
 
-// Submit assignment (students only)
 router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
   try {
     if (req.user.role === 'admin') {
@@ -159,7 +149,6 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
       return res.status(403).json({ message: 'Assignment is not active' });
     }
 
-    // Check if student already submitted
     const existingSubmission = assignment.submissions.find(
       sub => sub.student.toString() === req.user._id.toString()
     );
@@ -168,7 +157,6 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
       return res.status(400).json({ message: 'You have already submitted this assignment' });
     }
 
-    // Validate file type if specified
     if (assignment.fileType !== 'any' && assignment.fileType !== 'url') {
       if (!req.file) {
         return res.status(400).json({ message: 'File is required for this assignment' });
@@ -184,7 +172,6 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
       }
     }
 
-    // For URL submissions
     if (assignment.fileType === 'url' && !req.body.url) {
       return res.status(400).json({ message: 'URL is required for this assignment' });
     }
@@ -207,7 +194,6 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
   }
 });
 
-// Grade assignment submission (admin only)
 router.put('/:id/submissions/:submissionId/grade', adminAuth, async (req, res) => {
   try {
     const { grade, feedback } = req.body;
@@ -235,7 +221,6 @@ router.put('/:id/submissions/:submissionId/grade', adminAuth, async (req, res) =
   }
 });
 
-// Get user's submissions
 router.get('/user/submissions', auth, async (req, res) => {
   try {
     const assignments = await Assignment.find({

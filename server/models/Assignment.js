@@ -23,7 +23,7 @@ const assignmentSchema = new mongoose.Schema({
     required: true
   },
   maxFileSize: {
-    type: Number, // in MB
+    type: Number,
     default: 10
   },
   allowedExtensions: [{
@@ -85,7 +85,6 @@ const assignmentSchema = new mongoose.Schema({
   }
 });
 
-// Update the updatedAt field before saving
 assignmentSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();

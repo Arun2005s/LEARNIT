@@ -149,7 +149,6 @@ const AdminAssignments = () => {
           </button>
         </div>
 
-        {/* Assignment Form */}
         {showForm && (
           <div className="assignment-form-container">
             <div className="assignment-form">
@@ -274,7 +273,6 @@ const AdminAssignments = () => {
           </div>
         )}
 
-        {/* Assignments List */}
         <div className="assignments-list">
           {assignments.map((assignment) => (
             <div key={assignment._id} className="assignment-card">
@@ -332,7 +330,6 @@ const AdminAssignments = () => {
           ))}
         </div>
 
-        {/* Assignment Detail Modal */}
         {selectedAssignment && (
           <div className="modal-overlay" onClick={() => setSelectedAssignment(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
