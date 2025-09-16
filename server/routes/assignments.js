@@ -6,9 +6,51 @@ const path = require('path');
 
 const router = express.Router();
 
+// Helper function to process allowedExtensions
+const processAllowedExtensions = (allowedExtensions) => {
+  if (!allowedExtensions) return [];
+  
+  let extensions = [];
+  if (typeof allowedExtensions === 'string' && allowedExtensions.trim()) {
+    extensions = allowedExtensions
+      .split(',')
+      .map(ext => ext.trim())
+      .filter(ext => ext.length > 0)
+      .map(ext => ext.startsWith('.') ? ext : `.${ext}`); // Ensure extensions start with dot
+  } else if (Array.isArray(allowedExtensions)) {
+    extensions = allowedExtensions
+      .map(ext => ext.trim())
+      .filter(ext => ext.length > 0)
+      .map(ext => ext.startsWith('.') ? ext : `.${ext}`); // Ensure extensions start with dot
+  }
+  
+  // Add common file extension aliases
+  const aliases = {
+    '.jpg': ['.jpeg', '.jpe', '.jfif'],
+    '.jpeg': ['.jpg', '.jpe', '.jfif'],
+    '.png': ['.PNG'],
+    '.pdf': ['.PDF'],
+    '.doc': ['.DOC'],
+    '.docx': ['.DOCX'],
+    '.txt': ['.TXT'],
+    '.mp4': ['.MP4'],
+    '.avi': ['.AVI'],
+    '.mov': ['.MOV']
+  };
+  
+  const allExtensions = [...extensions];
+  extensions.forEach(ext => {
+    if (aliases[ext]) {
+      allExtensions.push(...aliases[ext]);
+    }
+  });
+  
+  return [...new Set(allExtensions)]; // Remove duplicates
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/assignments/');
+    cb(null, path.join(__dirname, '..', 'uploads', 'assignments'));
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -69,13 +111,16 @@ router.post('/', adminAuth, async (req, res) => {
   try {
     const { title, description, fileType, dueDate, maxFileSize, allowedExtensions } = req.body;
 
+    // Process allowedExtensions using helper function
+    const processedExtensions = processAllowedExtensions(allowedExtensions);
+
     const assignment = new Assignment({
       title,
       description,
       fileType,
       dueDate: new Date(dueDate),
       maxFileSize: maxFileSize || 10,
-      allowedExtensions: allowedExtensions || [],
+      allowedExtensions: processedExtensions,
       createdBy: req.user._id
     });
 
@@ -94,6 +139,9 @@ router.put('/:id', adminAuth, async (req, res) => {
   try {
     const { title, description, fileType, dueDate, maxFileSize, allowedExtensions, isActive } = req.body;
 
+    // Process allowedExtensions using helper function
+    const processedExtensions = processAllowedExtensions(allowedExtensions);
+
     const updatedAssignment = await Assignment.findByIdAndUpdate(
       req.params.id,
       {
@@ -102,7 +150,7 @@ router.put('/:id', adminAuth, async (req, res) => {
         fileType,
         dueDate: new Date(dueDate),
         maxFileSize,
-        allowedExtensions,
+        allowedExtensions: processedExtensions,
         isActive
       },
       { new: true }
@@ -135,6 +183,15 @@ router.delete('/:id', adminAuth, async (req, res) => {
 
 router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
   try {
+    console.log('Assignment submission attempt:', {
+      userId: req.user._id,
+      assignmentId: req.params.id,
+      userRole: req.user.role,
+      hasFile: !!req.file,
+      fileName: req.file?.originalname,
+      body: req.body
+    });
+
     if (req.user.role === 'admin') {
       return res.status(403).json({ message: 'Admins cannot submit assignments' });
     }
@@ -142,8 +199,17 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
     const assignment = await Assignment.findById(req.params.id);
     
     if (!assignment) {
+      console.log('Assignment not found:', req.params.id);
       return res.status(404).json({ message: 'Assignment not found' });
     }
+
+    console.log('Assignment found:', {
+      id: assignment._id,
+      title: assignment.title,
+      fileType: assignment.fileType,
+      isActive: assignment.isActive,
+      allowedExtensions: assignment.allowedExtensions
+    });
 
     if (!assignment.isActive) {
       return res.status(403).json({ message: 'Assignment is not active' });
@@ -163,6 +229,15 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
       }
 
       const fileExtension = path.extname(req.file.originalname).toLowerCase();
+      
+      // Debug logging
+      console.log('File validation:', {
+        fileName: req.file.originalname,
+        fileExtension,
+        allowedExtensions: assignment.allowedExtensions,
+        assignmentFileType: assignment.fileType,
+        isMatch: assignment.allowedExtensions.includes(fileExtension)
+      });
       
       if (assignment.allowedExtensions.length > 0 && 
           !assignment.allowedExtensions.includes(fileExtension)) {
@@ -188,8 +263,15 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
     assignment.submissions.push(submission);
     await assignment.save();
 
+    console.log('Submission created successfully:', submission);
     res.status(201).json(submission);
   } catch (error) {
+    console.error('Assignment submission error:', {
+      error: error.message,
+      stack: error.stack,
+      assignmentId: req.params.id,
+      userId: req.user?._id
+    });
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

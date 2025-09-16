@@ -50,6 +50,14 @@ const Assignments = () => {
     try {
       setSubmitting(true);
       
+      console.log('Submitting assignment:', {
+        assignmentId: selectedAssignment._id,
+        fileType: selectedAssignment.fileType,
+        hasFile: !!submissionData.file,
+        fileName: submissionData.file?.name,
+        comments: submissionData.comments
+      });
+      
       const formData = new FormData();
       formData.append('comments', submissionData.comments);
 
@@ -59,11 +67,18 @@ const Assignments = () => {
         formData.append('file', submissionData.file);
       }
 
-      await axios.post(`/api/assignments/${selectedAssignment._id}/submit`, formData, {
+      console.log('FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      const response = await axios.post(`/api/assignments/${selectedAssignment._id}/submit`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      
+      console.log('Submission response:', response.data);
 
       setSubmissionData({ file: null, url: '', comments: '' });
       setShowSubmissionForm(false);
