@@ -81,6 +81,28 @@ router.get('/', auth, async (req, res) => {
       .populate('submissions.student', 'fullName username')
       .sort({ createdAt: -1 });
 
+    // Fix any assignments with old allowedExtensions format
+    for (let assignment of assignments) {
+      if (assignment.allowedExtensions && assignment.allowedExtensions.length > 0) {
+        const firstExt = assignment.allowedExtensions[0];
+        if (typeof firstExt === 'string' && firstExt.includes(',')) {
+          // This is the old format - fix it
+          const processedExtensions = processAllowedExtensions(firstExt);
+          assignment.allowedExtensions = processedExtensions;
+          await assignment.save();
+          console.log(`Fixed allowedExtensions for assignment: ${assignment.title}`);
+        }
+      } else if (assignment.allowedExtensions && assignment.allowedExtensions.length === 1 && 
+                 typeof assignment.allowedExtensions[0] === 'string' && 
+                 assignment.allowedExtensions[0].includes(',')) {
+        // Handle case where it's a single string with commas
+        const processedExtensions = processAllowedExtensions(assignment.allowedExtensions[0]);
+        assignment.allowedExtensions = processedExtensions;
+        await assignment.save();
+        console.log(`Fixed allowedExtensions for assignment: ${assignment.title}`);
+      }
+    }
+
     res.json(assignments);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

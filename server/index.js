@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const session = require('express-session');
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const noteRoutes = require('./routes/notes');
 const userRoutes = require('./routes/users');
@@ -50,7 +51,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/assignments', assignmentRoutes);
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.json({ message: 'LEARNIT API is running!' });

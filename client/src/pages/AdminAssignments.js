@@ -122,6 +122,12 @@ const AdminAssignments = () => {
     return labels[fileType] || fileType;
   };
 
+  const isImageFile = (fileName) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
+    const extension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+    return imageExtensions.includes(extension);
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -369,6 +375,26 @@ const AdminAssignments = () => {
                             <a href={submission.fileUrl} target="_blank" rel="noopener noreferrer">
                               {submission.fileName}
                             </a>
+                            {isImageFile(submission.fileName) && (
+                              <div className="submission-image-preview">
+                                <img 
+                                  src={submission.fileUrl} 
+                                  alt={submission.fileName}
+                                  className="preview-image"
+                                  onClick={() => window.open(submission.fileUrl, '_blank')}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'block';
+                                  }}
+                                />
+                                <div className="image-error" style={{display: 'none'}}>
+                                  <p>Image could not be loaded</p>
+                                  <a href={submission.fileUrl} target="_blank" rel="noopener noreferrer">
+                                    Click to view in new tab
+                                  </a>
+                                </div>
+                              </div>
+                            )}
                           </div>
                           {submission.comments && (
                             <div className="submission-comments">

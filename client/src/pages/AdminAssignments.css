@@ -422,3 +422,50 @@
     justify-content: center;
   }
 }
+
+/* Image Preview Styles */
+.submission-image-preview {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f7fafc;
+}
+
+.preview-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.preview-image:hover {
+  transform: scale(1.05);
+}
+
+.image-error {
+  padding: 1rem;
+  text-align: center;
+  color: #718096;
+}
+
+.image-error p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.image-error a {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.image-error a:hover {
+  text-decoration: underline;
+}
