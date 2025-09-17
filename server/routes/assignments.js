@@ -103,7 +103,33 @@ router.get('/', auth, async (req, res) => {
       }
     }
 
-    res.json(assignments);
+    // Normalize submission file URLs to current host (fixes localhost links across devices)
+    const hostBase = `${req.protocol}://${req.get('host')}`;
+    const normalizedAssignments = assignments.map(doc => {
+      const assignment = doc.toObject ? doc.toObject() : doc;
+      if (Array.isArray(assignment.submissions)) {
+        assignment.submissions = assignment.submissions.map(sub => {
+          if (sub && sub.fileUrl) {
+            try {
+              const parsed = new URL(sub.fileUrl, hostBase);
+              // If stored as localhost or as a relative path, rewrite to current host
+              if (parsed.hostname === 'localhost' || sub.fileUrl.startsWith('/')) {
+                sub.fileUrl = `${hostBase}${parsed.pathname}`;
+              }
+            } catch (e) {
+              // If URL constructor fails and it's an uploads path, prefix with host
+              if (typeof sub.fileUrl === 'string' && sub.fileUrl.startsWith('/uploads/')) {
+                sub.fileUrl = `${hostBase}${sub.fileUrl}`;
+              }
+            }
+          }
+          return sub;
+        });
+      }
+      return assignment;
+    });
+
+    res.json(normalizedAssignments);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -123,7 +149,28 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Assignment not available' });
     }
 
-    res.json(assignment);
+    // Normalize submission file URLs to current host
+    const hostBase = `${req.protocol}://${req.get('host')}`;
+    const obj = assignment.toObject ? assignment.toObject() : assignment;
+    if (Array.isArray(obj.submissions)) {
+      obj.submissions = obj.submissions.map(sub => {
+        if (sub && sub.fileUrl) {
+          try {
+            const parsed = new URL(sub.fileUrl, hostBase);
+            if (parsed.hostname === 'localhost' || sub.fileUrl.startsWith('/')) {
+              sub.fileUrl = `${hostBase}${parsed.pathname}`;
+            }
+          } catch (e) {
+            if (typeof sub.fileUrl === 'string' && sub.fileUrl.startsWith('/uploads/')) {
+              sub.fileUrl = `${hostBase}${sub.fileUrl}`;
+            }
+          }
+        }
+        return sub;
+      });
+    }
+
+    res.json(obj);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -273,10 +320,11 @@ router.post('/:id/submit', auth, upload.single('file'), async (req, res) => {
       return res.status(400).json({ message: 'URL is required for this assignment' });
     }
 
+    const hostBase = `${req.protocol}://${req.get('host')}`;
     const submission = {
       student: req.user._id,
       submittedAt: new Date(),
-      fileUrl: req.file ? `/uploads/assignments/${req.file.filename}` : req.body.url,
+      fileUrl: req.file ? `${hostBase}/uploads/assignments/${req.file.filename}` : req.body.url,
       fileName: req.file ? req.file.originalname : req.body.url,
       fileType: req.file ? path.extname(req.file.originalname) : 'url',
       comments: req.body.comments || ''
