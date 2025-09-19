@@ -1,7 +1,8 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -18,6 +19,7 @@ import './App.css';
 
 function App() {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -30,8 +32,9 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar />
-      <main className="main-content">
+      {user && <Sidebar />}
+      {!user && location.pathname === '/' && <Header />}
+      <main className={`main-content ${user ? 'with-sidebar' : (location.pathname === '/' ? 'with-header' : '')}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route 
