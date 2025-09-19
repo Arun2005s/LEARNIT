@@ -14,6 +14,7 @@ import EditNote from './pages/EditNote';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminAssignments from './pages/AdminAssignments';
+import AdminSettings from './pages/AdminSettings';
 import Assignments from './pages/Assignments';
 import './App.css';
 
@@ -76,6 +77,10 @@ function App() {
           <Route 
             path="/admin/assignments" 
             element={user?.role === 'admin' ? <AdminAssignments /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/admin/settings" 
+            element={user?.role === 'admin' ? <AdminSettings /> : <Navigate to="/" />} 
           />
           <Route 
             path="/assignments" 

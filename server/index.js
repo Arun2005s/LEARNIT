@@ -10,6 +10,7 @@ const noteRoutes = require('./routes/notes');
 const userRoutes = require('./routes/users');
 const courseRoutes = require('./routes/courses');
 const assignmentRoutes = require('./routes/assignments');
+const settingsRoutes = require('./routes/settings');
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/assignments', assignmentRoutes);
+app.use('/api/admin/settings', settingsRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
